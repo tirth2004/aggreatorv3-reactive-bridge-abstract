@@ -16,3 +16,23 @@
 ```
 forge init . --force
 ```
+
+- Install dependencies 
+```
+forge install foundry-rs/forge-std --no-commit
+forge install Reactive-Network/reactive-lib --no-commit
+```
+
+- Change foundry.toml for easier imports
+
+```
+[profile.default.remappings]
+forge-std = "lib/forge-std/src"
+reactive-lib = "lib/reactive-lib/src"
+```
+
+So now our imports look like: 
+```
+import "reactive-lib/abstract-base/AbstractReactive.sol";
+import "reactive-lib/interfaces/IReactive.sol";
+```
