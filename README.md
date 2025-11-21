@@ -1,11 +1,66 @@
-# Details about origin, RC and destination contracts
+## Foundry
 
-- Origin chain (Sepolia)
-    contract to be monitored: 0x719E22E3D4b690E5d96cCb40619180B5427F14AE (ETH/USD Aggregator price feed )
-    topic0: keccak256("AnswerUpdated(int256,uint256,uint256)")
+**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-- RC Contract (Reactive Lasna testnet)
+Foundry consists of:
 
-- Destination Chain (Abstract)
-    It does not have support for chainlink feeds. RC contract will now enable Abstract to use chainlink ETH/USD feeds 
+-   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+-   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+-   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+-   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
+## Documentation
+
+https://book.getfoundry.sh/
+
+## Usage
+
+### Build
+
+```shell
+$ forge build
+```
+
+### Test
+
+```shell
+$ forge test
+```
+
+### Format
+
+```shell
+$ forge fmt
+```
+
+### Gas Snapshots
+
+```shell
+$ forge snapshot
+```
+
+### Anvil
+
+```shell
+$ anvil
+```
+
+### Deploy
+
+```shell
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
+
+### Cast
+
+```shell
+$ cast <subcommand>
+```
+
+### Help
+
+```shell
+$ forge --help
+$ anvil --help
+$ cast --help
+```
