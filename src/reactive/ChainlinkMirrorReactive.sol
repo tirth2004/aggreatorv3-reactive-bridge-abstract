@@ -6,15 +6,29 @@ import "reactive-lib/abstract-base/AbstractReactive.sol";
 
 import {AggregatorV3Interface} from "../interfaces/AggregatorV3Interface.sol";
 
+interface IAbstractFeedProxy {
+    function updateFromBridge(
+        address rvmId,
+        uint80 roundId,
+        int256 answer,
+        uint256 startedAt,
+        uint256 updatedAt,
+        uint80 answeredInRound
+    ) external;
+}
+
 contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
-    // Base mainnet chain id
-    uint256 private constant ORIGIN_CHAIN_ID = 11155111;
+    // Sepolia mainnet chain id
+    uint256 private constant ORIGIN_CHAIN_ID = 84532;
+
+    // Testing on arbitrum for faster events
+    // uint256 private constant ORIGIN_CHAIN_ID = 42161;
 
     // keccak256("AnswerUpdated(int256,uint256,uint256)")
     uint256 private constant ANSWER_UPDATED_TOPIC_0 =
         0x0559884fd3a460db3073b7fc896cc77986f16e378210ded43186175bf646fc5f;
 
-    uint64 private constant CALLBACK_GAS_LIMIT = 200000;
+    uint64 private constant CALLBACK_GAS_LIMIT = 500000;
 
     address public immutable originFeed;
     uint256 public immutable destinationChainId;
@@ -70,9 +84,34 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
             return;
         }
 
-        // For now: just prove we saw something
-        lastMirroredRoundId = lastMirroredRoundId + 1;
+        // event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 updatedAt);
+        int256 answer = int256(log.topic_1); // indexed int256 current
+        uint80 roundId = uint80(log.topic_2); // indexed uint256 roundId
+        uint256 updatedAt = abi.decode(log.data, (uint256)); // non-indexed updatedA
 
-        emit NewRoundSeen(lastMirroredRoundId, 0, 0);
+        // simple approximation: startedAt = updatedAt, answeredInRound = roundId
+        uint256 startedAt = updatedAt;
+        uint80 answeredInRound = roundId;
+
+        // keep some state in ReactVM for debugging
+        lastMirroredRoundId = roundId;
+        emit NewRoundSeen(roundId, answer, updatedAt);
+
+        bytes memory payload = abi.encodeWithSelector(
+            IAbstractFeedProxy.updateFromBridge.selector,
+            address(0),
+            roundId,
+            answer,
+            startedAt,
+            updatedAt,
+            answeredInRound
+        );
+
+        emit Callback(
+            destinationChainId, // Abstract chain id (e.g. 2741)
+            destinationFeed, // 0x30824dA79f07F1653beC0c9ecF35a665A0eCd170
+            CALLBACK_GAS_LIMIT, // >= 100_000, we had 200_000
+            payload
+        );
     }
 }

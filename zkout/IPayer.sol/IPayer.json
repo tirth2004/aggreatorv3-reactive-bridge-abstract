@@ -1,0 +1,1 @@
+{"abi":[{"type":"receive","stateMutability":"payable"},{"type":"function","name":"pay","inputs":[{"name":"amount","type":"uint256","internalType":"uint256"}],"outputs":[],"stateMutability":"nonpayable"}],"storageLayout":{"storage":[],"types":{}},"userdoc":{},"devdoc":{},"methodIdentifiers":{},"factoryDependencies":{},"factoryDependenciesUnlinked":[],"id":23}
