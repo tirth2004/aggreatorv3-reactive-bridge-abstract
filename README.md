@@ -14,6 +14,23 @@ The project consists of three main components:
 
 3. **Frontend UI**: React-based web interface for creating new oracle bridges, viewing deployed bridges, and managing funding for contracts.
 
+Architecture diagram
+![image](./Diagrams/ArchDiagram.png)
+
+- Left: Echo App (Next.js + Node/Express)
+    - Frontend dashboard
+    - Backend that shells out to forge/cast
+- Center: Reactive Lasna (ReactVM + Service)
+    - ChainlinkMirrorReactive + subscription logic
+- Right: Destination: Eth Sepolia
+    - CallbackProxy (provided by Reactive)
+    - AbstractFeedProxy (mirrored Chainlink feed compatible with AggregatorV3Interface)
+
+Flow diagram
+![image](./Diagrams/flow-diagram-final.png)
+- One POST /api/bridges → deploys both contracts and returns all addresses.
+- Two more endpoints (/api/fund/reactive, /api/fund/destination) let you fund the Lasna RC and Sepolia CallbackProxy from the UI, no terminals
+
 ## Project Structure
 
 ```
