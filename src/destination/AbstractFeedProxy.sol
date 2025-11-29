@@ -153,4 +153,18 @@ contract AbstractFeedProxy is AggregatorV3Interface {
 
         return (_latest, r.answer, r.startedAt, r.updatedAt, r.answeredInRound);
     }
+
+    function getConfig()
+        external
+        view
+        returns (
+            address _sourceFeed,
+            address _callbackProxy,
+            uint8 _decimals,
+            string memory _description,
+            uint256 _version
+        )
+    {
+        return (sourceFeed, callbackProxy, decimals, description, version);
+    }
 }

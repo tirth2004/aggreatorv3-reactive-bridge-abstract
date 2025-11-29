@@ -37,7 +37,7 @@ import "reactive-lib/abstract-base/AbstractReactive.sol";
 import "reactive-lib/interfaces/IReactive.sol";
 ```
 
-- forge create src/reactive/ChainlinkMirrorReactive.sol:ChainlinkMirrorReactive --broadcast --rpc-url "$REACTIVE_RPC" --private-key "$REACTIVE_PRIVATE_KEY" --constructor-args "$ORIGIN_FEED" "$DESTINATION_CHAIN_ID" "$DESTINATION_FEED" 
+- forge create src/reactive/ChainlinkMirrorReactive.sol:ChainlinkMirrorReactive --broadcast --rpc-url "$REACTIVE_RPC" --private-key "$REACTIVE_PRIVATE_KEY" --constructor-args "$ORIGIN_FEED" "$ORIGIN_CHAIN_ID" "$DESTINATION_CHAIN_ID" "$DESTINATION_FEED" 
 
 
 # Put foundry-zksync first (for Abstract)

@@ -19,7 +19,9 @@ interface IAbstractFeedProxy {
 
 contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
     // Sepolia mainnet chain id
-    uint256 private constant ORIGIN_CHAIN_ID = 84532;
+    // uint256 private constant ORIGIN_CHAIN_ID = 84532;
+
+    uint256 public immutable originChainId;
 
     // Testing on arbitrum for faster events
     // uint256 private constant ORIGIN_CHAIN_ID = 42161;
@@ -50,17 +52,19 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
 
     constructor(
         address _originFeed,
+        uint256 _originChainId,
         uint256 _destinationChainId,
         address _destinationFeed
     ) payable {
         originFeed = _originFeed;
+        originChainId = _originChainId;
         destinationChainId = _destinationChainId;
         destinationFeed = _destinationFeed;
 
         // Only the RN copy (not ReactVM) should subscribe
         if (!vm) {
             service.subscribe(
-                ORIGIN_CHAIN_ID,
+                originChainId,
                 _originFeed,
                 ANSWER_UPDATED_TOPIC_0,
                 REACTIVE_IGNORE,
@@ -68,7 +72,7 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
                 REACTIVE_IGNORE
             );
 
-            emit Subscribed(address(service), ORIGIN_CHAIN_ID, _originFeed);
+            emit Subscribed(address(service), originChainId, _originFeed);
         }
     }
 
@@ -77,7 +81,7 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
     function react(LogRecord calldata log) external override {
         // Only process logs from our origin feed + topic
         if (
-            log.chain_id != ORIGIN_CHAIN_ID ||
+            log.chain_id != originChainId ||
             log._contract != originFeed ||
             log.topic_0 != ANSWER_UPDATED_TOPIC_0
         ) {
@@ -112,6 +116,26 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
             destinationFeed, // 0x30824dA79f07F1653beC0c9ecF35a665A0eCd170
             CALLBACK_GAS_LIMIT, // >= 100_000, we had 200_000
             payload
+        );
+    }
+
+    function getConfig()
+        external
+        view
+        returns (
+            uint256 _originChainId,
+            address _originFeed,
+            uint256 _destinationChainId,
+            address _destinationFeed,
+            uint64 _callbackGasLimit
+        )
+    {
+        return (
+            originChainId,
+            originFeed,
+            destinationChainId,
+            destinationFeed,
+            CALLBACK_GAS_LIMIT
         );
     }
 }

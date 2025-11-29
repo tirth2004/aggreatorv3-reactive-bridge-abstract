@@ -15,5 +15,5 @@ remappings = [
 [etherscan]
 abstractTestnet = { chain = "11124", url = "https://api-sepolia.abscan.org/api", key = "TACK2D1RGYX9U7MC31SZWWQ7FCWRYQ96AD"}
 abstractMainnet = { chain = "2741", url = "https://api.abscan.org/api", key = ""}
-
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
