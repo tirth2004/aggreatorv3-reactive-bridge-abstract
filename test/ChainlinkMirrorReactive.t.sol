@@ -6,19 +6,9 @@ import {ChainlinkMirrorReactive} from "../src/reactive/ChainlinkMirrorReactive.s
 import {IReactive} from "reactive-lib/interfaces/IReactive.sol";
 
 contract MockChainlinkMirrorReactive is ChainlinkMirrorReactive {
-    constructor(
-        address _originFeed,
-        uint256 _originChainId,
-        uint256 _destinationChainId,
-        address _destinationFeed
-    )
+    constructor(address _originFeed, uint256 _originChainId, uint256 _destinationChainId, address _destinationFeed)
         payable
-        ChainlinkMirrorReactive(
-            _originFeed,
-            _originChainId,
-            _destinationChainId,
-            _destinationFeed
-        )
+        ChainlinkMirrorReactive(_originFeed, _originChainId, _destinationChainId, _destinationFeed)
     {}
 
     // Expose react function for testing
@@ -34,19 +24,13 @@ contract ChainlinkMirrorReactiveTest is Test {
     uint256 public destinationChainId = 11155111; // Sepolia (for testing)
     address public destinationFeed;
 
-    uint256 constant ANSWER_UPDATED_TOPIC_0 =
-        0x0559884fd3a460db3073b7fc896cc77986f16e378210ded43186175bf646fc5f;
+    uint256 constant ANSWER_UPDATED_TOPIC_0 = 0x0559884fd3a460db3073b7fc896cc77986f16e378210ded43186175bf646fc5f;
 
     function setUp() public {
         originFeed = address(0x1111);
         destinationFeed = address(0x2222);
 
-        reactive = new MockChainlinkMirrorReactive(
-            originFeed,
-            originChainId,
-            destinationChainId,
-            destinationFeed
-        );
+        reactive = new MockChainlinkMirrorReactive(originFeed, originChainId, destinationChainId, destinationFeed);
     }
 
     function test_Constructor() public {

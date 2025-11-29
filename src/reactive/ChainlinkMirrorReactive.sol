@@ -38,24 +38,12 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
 
     uint80 public lastMirroredRoundId;
 
-    event Subscribed(
-        address indexed service,
-        uint256 indexed chainId,
-        address indexed feed
-    );
+    event Subscribed(address indexed service, uint256 indexed chainId, address indexed feed);
 
-    event NewRoundSeen(
-        uint80 indexed roundId,
-        int256 answer,
-        uint256 updatedAt
-    );
+    event NewRoundSeen(uint80 indexed roundId, int256 answer, uint256 updatedAt);
 
-    constructor(
-        address _originFeed,
-        uint256 _originChainId,
-        uint256 _destinationChainId,
-        address _destinationFeed
-    ) payable {
+    constructor(address _originFeed, uint256 _originChainId, uint256 _destinationChainId, address _destinationFeed)
+        payable {
         originFeed = _originFeed;
         originChainId = _originChainId;
         destinationChainId = _destinationChainId;
@@ -64,12 +52,7 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
         // Only the RN copy (not ReactVM) should subscribe
         if (!vm) {
             service.subscribe(
-                originChainId,
-                _originFeed,
-                ANSWER_UPDATED_TOPIC_0,
-                REACTIVE_IGNORE,
-                REACTIVE_IGNORE,
-                REACTIVE_IGNORE
+                originChainId, _originFeed, ANSWER_UPDATED_TOPIC_0, REACTIVE_IGNORE, REACTIVE_IGNORE, REACTIVE_IGNORE
             );
 
             emit Subscribed(address(service), originChainId, _originFeed);
@@ -80,11 +63,7 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
     // function react(LogRecord calldata log) external override vmOnly {
     function react(LogRecord calldata log) external override {
         // Only process logs from our origin feed + topic
-        if (
-            log.chain_id != originChainId ||
-            log._contract != originFeed ||
-            log.topic_0 != ANSWER_UPDATED_TOPIC_0
-        ) {
+        if (log.chain_id != originChainId || log._contract != originFeed || log.topic_0 != ANSWER_UPDATED_TOPIC_0) {
             return;
         }
 
@@ -130,12 +109,6 @@ contract ChainlinkMirrorReactive is IReactive, AbstractReactive {
             uint64 _callbackGasLimit
         )
     {
-        return (
-            originChainId,
-            originFeed,
-            destinationChainId,
-            destinationFeed,
-            CALLBACK_GAS_LIMIT
-        );
+        return (originChainId, originFeed, destinationChainId, destinationFeed, CALLBACK_GAS_LIMIT);
     }
 }

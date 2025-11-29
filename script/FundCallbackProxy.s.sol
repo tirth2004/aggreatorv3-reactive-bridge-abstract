@@ -19,9 +19,7 @@ contract FundCallbackProxy is Script {
         vm.startBroadcast(pk);
 
         // depositTo(address) payable
-        (bool ok, ) = callbackProxy.call{value: amount}(
-            abi.encodeWithSignature("depositTo(address)", destinationFeed)
-        );
+        (bool ok,) = callbackProxy.call{value: amount}(abi.encodeWithSignature("depositTo(address)", destinationFeed));
         require(ok, "depositTo failed");
 
         vm.stopBroadcast();

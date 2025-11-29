@@ -20,9 +20,7 @@ contract FundReactive is Script {
         vm.startBroadcast(pk);
 
         // depositTo(address) payable
-        (bool ok, ) = systemContract.call{value: amount}(
-            abi.encodeWithSignature("depositTo(address)", reactive)
-        );
+        (bool ok,) = systemContract.call{value: amount}(abi.encodeWithSignature("depositTo(address)", reactive));
         require(ok, "depositTo failed");
 
         vm.stopBroadcast();

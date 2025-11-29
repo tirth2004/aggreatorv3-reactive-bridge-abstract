@@ -24,13 +24,7 @@ contract DeployAbstractFeedProxy is Script {
 
         vm.startBroadcast(deployerKey);
 
-        AbstractFeedProxy proxy = new AbstractFeedProxy(
-            sourceFeed,
-            callbackProxy,
-            decimals,
-            description,
-            version
-        );
+        AbstractFeedProxy proxy = new AbstractFeedProxy(sourceFeed, callbackProxy, decimals, description, version);
 
         vm.stopBroadcast();
 

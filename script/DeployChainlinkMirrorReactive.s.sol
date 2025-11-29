@@ -22,12 +22,8 @@ contract DeployChainlinkMirrorReactive is Script {
 
         vm.startBroadcast(deployerKey);
 
-        ChainlinkMirrorReactive rc = new ChainlinkMirrorReactive(
-            originFeed,
-            originChainId,
-            destinationChainId,
-            destinationFeed
-        );
+        ChainlinkMirrorReactive rc =
+            new ChainlinkMirrorReactive(originFeed, originChainId, destinationChainId, destinationFeed);
 
         vm.stopBroadcast();
 
