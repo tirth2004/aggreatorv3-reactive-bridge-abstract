@@ -142,6 +142,8 @@ Script to fund the destination callback proxy by calling `depositTo(address)` on
 
 The backend server (`server/server.js`) is an Express application that provides REST API endpoints for bridge management and contract funding.
 
+For detailed information, check README.md inside /server
+
 ### API Endpoints
 
 **POST /api/bridges**
@@ -152,72 +154,13 @@ Creates a new oracle bridge by:
 3. Deploying `ChainlinkMirrorReactive` to Reactive Network
 4. Returning deployment addresses and feed metadata
 
-Request body:
-```json
-{
-  "originChainId": 84532,
-  "originFeed": "0x...",
-  "originRpc": "https://..."
-}
-```
-
-Response:
-```json
-{
-  "originChainId": 84532,
-  "originFeed": "0x...",
-  "originRpc": "https://...",
-  "destinationChainId": 11155111,
-  "destinationFeed": "0x...",
-  "reactiveAddress": "0x...",
-  "feedDecimals": 8,
-  "feedDescription": "ETH / USD"
-}
-```
-
 **POST /api/fund/reactive**
 
 Funds a Reactive contract on Lasna by sending ETH to the system contract's `depositTo(address)` function.
 
-Request body:
-```json
-{
-  "rcAddress": "0x...",
-  "amountEth": "0.01"
-}
-```
-
-Response:
-```json
-{
-  "rcAddress": "0x...",
-  "amountEth": "0.01",
-  "txHash": "0x...",
-  "raw": "..."
-}
-```
-
 **POST /api/fund/destination**
 
 Funds the destination callback proxy by sending ETH to the callback proxy's `depositTo(address)` function.
-
-Request body:
-```json
-{
-  "feedAddress": "0x...",
-  "amountEth": "0.001"
-}
-```
-
-Response:
-```json
-{
-  "feedAddress": "0x...",
-  "amountEth": "0.001",
-  "txHash": "0x...",
-  "raw": "..."
-}
-```
 
 ### Environment Variables
 
@@ -233,41 +176,14 @@ The server requires the following environment variables (set in `.env`):
 
 The frontend (`ui/`) is a React application built with Vite, TypeScript, and Tailwind CSS. It provides a user interface for managing oracle bridges.
 
+For detailed information regarding UI, refer to README.md inside /ui
+
 ### Main Components
 
 **App.tsx**
-
-Main application component that:
-- Manages bridge state using localStorage
-- Handles bridge creation via API calls
-- Renders the header with "Create New Oracle/Bridge" button
-- Displays a grid of deployed bridge cards
-- Shows bridge details when a bridge is selected
-
 **BridgeCard.tsx**
-
-Displays a bridge card showing:
-- Price feed description
-- Origin chain ID and name
-- Destination chain ID
-- Clickable to expand details
-
 **BridgeDetails.tsx**
-
-Shows detailed information for a selected bridge:
-- Origin feed address (copyable)
-- Destination feed address (copyable)
-- Reactive contract address (copyable)
-- "Fund RC" button to fund the Reactive contract
-- "Fund Destination Callback Proxy" button to fund the destination proxy
-
 **CreateBridgeModal.tsx**
-
-Inline panel (not a modal) for creating new bridges:
-- Origin chain selector dropdown
-- Price feed selector dropdown (filtered by selected chain)
-- Create button that calls the backend API
-- Success and error message display
 
 ### Configuration
 
@@ -356,8 +272,82 @@ forge build --zk
 
 ### Testing
 
+The project includes comprehensive test suites for both smart contracts using Foundry's testing framework.
+
+#### Running Tests
+
+Run all tests:
 ```bash
 forge test
+```
+
+Run tests with verbose output:
+```bash
+forge test -vv
+```
+
+Run tests with very verbose output (shows traces):
+```bash
+forge test -vvv
+```
+
+Run a specific test file:
+```bash
+forge test --match-path test/AbstractFeedProxy.t.sol
+forge test --match-path test/ChainlinkMirrorReactive.t.sol
+```
+
+Run a specific test function:
+```bash
+forge test --match-test test_UpdateFromBridge_Success
+```
+
+Run tests matching a pattern:
+```bash
+forge test --match-contract AbstractFeedProxyTest
+forge test --match-contract ChainlinkMirrorReactiveTest
+```
+
+#### Test Structure
+
+**AbstractFeedProxy Tests** (`test/AbstractFeedProxy.t.sol`)
+
+Tests for the destination chain feed proxy contract:
+- Constructor initialization and immutable values
+- `updateFromBridge` functionality and state updates
+- Round data storage and retrieval
+- `getRoundData` and `latestRoundData` view functions
+- Error handling (zero timestamps, non-existent rounds)
+- Event emissions
+- Multiple rounds handling
+- AggregatorV3Interface compliance
+
+**ChainlinkMirrorReactive Tests** (`test/ChainlinkMirrorReactive.t.sol`)
+
+Tests for the Reactive Network contract:
+- Constructor initialization
+- `react` function log processing
+- Event filtering (chain ID, contract address, topic_0)
+- Round ID tracking
+- Event data decoding
+- Callback emission
+- Multiple rounds handling
+- Configuration getter functions
+
+#### Test Coverage
+
+The test suite includes 25 tests covering:
+- Core functionality of both contracts
+- Edge cases and error conditions
+- Access control and security
+- Event emissions
+- State management
+- Interface compliance
+
+All tests pass successfully:
+```bash
+$ forge test
+Ran 3 test suites: 25 tests passed, 0 failed
 ```
 
 ## How It Works
