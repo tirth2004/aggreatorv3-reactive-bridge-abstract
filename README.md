@@ -66,7 +66,7 @@ A Reactive Contract deployed on Reactive Network (Lasna) that:
 The contract constructor takes:
 - `_originFeed`: Address of the Chainlink aggregator on the origin chain
 - `_originChainId`: Chain ID of the origin chain
-- `_destinationChainId`: Chain ID of the destination chain (Abstract Mainnet)
+- `_destinationChainId`: Chain ID of the destination chain (Eth-sepolia)
 - `_destinationFeed`: Address of the AbstractFeedProxy on the destination chain
 
 **AbstractFeedProxy** (`src/destination/AbstractFeedProxy.sol`)
@@ -79,7 +79,7 @@ A destination contract deployed on Eth-Sepolia that:
 
 The contract constructor takes:
 - `_sourceFeed`: Original Chainlink feed address on the origin chain
-- `_callbackProxy`: Reactive callback proxy address on Abstract
+- `_callbackProxy`: Reactive callback proxy address on Eth-sepolia
 - `_decimals`: Price feed decimals (typically 8)
 - `_description`: Human-readable description (e.g., "ETH / USD")
 - `_version`: Version number
