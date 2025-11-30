@@ -24,7 +24,11 @@ contract AbstractFeedProxy is AggregatorV3Interface {
         uint80 answeredInRound
     );
 
-    event LatestRoundSynced(uint80 indexed roundId, int256 answer, uint256 updatedAt);
+    event LatestRoundSynced(
+        uint80 indexed roundId,
+        int256 answer,
+        uint256 updatedAt
+    );
 
     /// @notice decimals of the price feed (e.g. 8 for ETH/USD)
     uint8 public immutable override decimals;
@@ -44,8 +48,17 @@ contract AbstractFeedProxy is AggregatorV3Interface {
     /// @notice last round id that was written
     uint80 public latestRoundId;
 
+    // dev-key-EOA
+    address public constant authorizedRvmId =
+        0x7a9B05C27b9D5e3D1E463956991ef7AbB24F309D;
+
     /// @dev stored round data
     mapping(uint80 => RoundData) private rounds;
+
+    modifier onlyAuthorizedRvm(address rvmId) {
+        require(rvmId == authorizedRvmId, "AbstractFeedProxy: bad rvmId");
+        _;
+    }
 
     error NoDataPresent();
 
@@ -76,7 +89,7 @@ contract AbstractFeedProxy is AggregatorV3Interface {
         uint256 startedAt,
         uint256 updatedAt,
         uint80 answeredInRound
-    ) external {
+    ) external onlyAuthorizedRvm(rvmId) {
         require(updatedAt != 0, "AbstractFeedProxy: bad timestamp");
 
         latestRoundId = roundId;
@@ -89,7 +102,14 @@ contract AbstractFeedProxy is AggregatorV3Interface {
             initialized: true
         });
 
-        emit BridgeUpdateReceived(rvmId, roundId, answer, startedAt, updatedAt, answeredInRound);
+        emit BridgeUpdateReceived(
+            rvmId,
+            roundId,
+            answer,
+            startedAt,
+            updatedAt,
+            answeredInRound
+        );
 
         emit LatestRoundSynced(roundId, answer, updatedAt);
     }
@@ -98,23 +118,43 @@ contract AbstractFeedProxy is AggregatorV3Interface {
     //  AggregatorV3Interface view functions
     // -----------------------------------------------------------------------
 
-    function getRoundData(uint80 _roundId)
+    function getRoundData(
+        uint80 _roundId
+    )
         external
         view
         override
-        returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
+        returns (
+            uint80 roundId,
+            int256 answer,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        )
     {
         RoundData memory r = rounds[_roundId];
         if (!r.initialized) revert NoDataPresent();
 
-        return (_roundId, r.answer, r.startedAt, r.updatedAt, r.answeredInRound);
+        return (
+            _roundId,
+            r.answer,
+            r.startedAt,
+            r.updatedAt,
+            r.answeredInRound
+        );
     }
 
     function latestRoundData()
         external
         view
         override
-        returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
+        returns (
+            uint80 roundId,
+            int256 answer,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        )
     {
         uint80 _latest = latestRoundId;
         RoundData memory r = rounds[_latest];
