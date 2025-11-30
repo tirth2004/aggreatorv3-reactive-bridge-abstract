@@ -12,6 +12,7 @@ contract AbstractFeedProxyTest is Test {
     uint8 public decimals = 8;
     string public description = "ETH / USD";
     uint256 public version = 1;
+    address public constant authorizedRvmId = 0x7a9B05C27b9D5e3D1E463956991ef7AbB24F309D;
 
     function setUp() public {
         sourceFeed = address(0x1111);
@@ -29,7 +30,7 @@ contract AbstractFeedProxyTest is Test {
     }
 
     function test_UpdateFromBridge_Success() public {
-        address rvmId = address(0x3333);
+        address rvmId = authorizedRvmId;
         uint80 roundId = 1;
         int256 answer = 2000e8; // $2000 with 8 decimals
         uint256 startedAt = 1000;
@@ -58,11 +59,11 @@ contract AbstractFeedProxyTest is Test {
 
         vm.startPrank(callbackProxy);
 
-        feedProxy.updateFromBridge(address(0), roundId1, answer, timestamp, timestamp, roundId1);
+        feedProxy.updateFromBridge(authorizedRvmId, roundId1, answer, timestamp, timestamp, roundId1);
 
         assertEq(feedProxy.latestRoundId(), roundId1);
 
-        feedProxy.updateFromBridge(address(0), roundId2, answer, timestamp, timestamp, roundId2);
+        feedProxy.updateFromBridge(authorizedRvmId, roundId2, answer, timestamp, timestamp, roundId2);
 
         assertEq(feedProxy.latestRoundId(), roundId2);
 
@@ -70,7 +71,7 @@ contract AbstractFeedProxyTest is Test {
     }
 
     function test_UpdateFromBridge_EmitsEvents() public {
-        address rvmId = address(0x3333);
+        address rvmId = authorizedRvmId;
         uint80 roundId = 1;
         int256 answer = 2000e8;
         uint256 startedAt = 1000;
@@ -93,7 +94,7 @@ contract AbstractFeedProxyTest is Test {
 
         vm.expectRevert("AbstractFeedProxy: bad timestamp");
         feedProxy.updateFromBridge(
-            address(0),
+            authorizedRvmId,
             1,
             2000e8,
             block.timestamp,
@@ -110,7 +111,7 @@ contract AbstractFeedProxyTest is Test {
         uint80 answeredInRound = 1;
 
         vm.prank(callbackProxy);
-        feedProxy.updateFromBridge(address(0), roundId, answer, startedAt, updatedAt, answeredInRound);
+        feedProxy.updateFromBridge(authorizedRvmId, roundId, answer, startedAt, updatedAt, answeredInRound);
 
         (uint80 rId, int256 ans, uint256 sAt, uint256 uAt, uint80 aInRound) = feedProxy.getRoundData(roundId);
 
@@ -132,7 +133,7 @@ contract AbstractFeedProxyTest is Test {
         uint256 timestamp = block.timestamp;
 
         vm.prank(callbackProxy);
-        feedProxy.updateFromBridge(address(0), roundId, answer, timestamp, timestamp, roundId);
+        feedProxy.updateFromBridge(authorizedRvmId, roundId, answer, timestamp, timestamp, roundId);
 
         (uint80 rId, int256 ans, uint256 sAt, uint256 uAt, uint80 aInRound) = feedProxy.latestRoundData();
 
@@ -168,7 +169,7 @@ contract AbstractFeedProxyTest is Test {
         // Update multiple rounds
         for (uint80 i = 1; i <= 10; i++) {
             feedProxy.updateFromBridge(
-                address(0), i, int256(uint256(i) * 100e8), 1000 + uint256(i), 1100 + uint256(i), i
+                authorizedRvmId, i, int256(uint256(i) * 100e8), 1000 + uint256(i), 1100 + uint256(i), i
             );
         }
 
